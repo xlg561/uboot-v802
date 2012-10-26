@@ -1,5 +1,4 @@
 /*
- *
  * Copyright (C) 2010-2011 Freescale Semiconductor, Inc.
  *
  * Configuration settings for the MX53-EVK Freescale board.

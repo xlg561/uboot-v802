@@ -268,7 +268,8 @@
 
 /* Monitor at beginning of flash */
 /* #define CONFIG_FSL_ENV_IN_SATA */
-#define CONFIG_FSL_ENV_IN_MMC
+//#define CONFIG_FSL_ENV_IN_MMC
+#define CONFIG_FSL_ENV_IN_NAND
 
 #define CONFIG_ENV_SECT_SIZE    (128 * 1024)
 #define CONFIG_ENV_SIZE         CONFIG_ENV_SECT_SIZE

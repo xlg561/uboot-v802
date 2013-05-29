@@ -157,12 +157,15 @@
 		"rd_loadaddr=0x70D00000\0"				\
 		"nfsroot=/opt/eldk/arm\0"				\
 		"bootargs_base=setenv bootargs console=ttymxc0,115200\0"		\
+                "lvds=setenv bootargs ${bootargs} di1_primary video=mxcdi1fb:RGB24,TM19 ldb=split,di=1,ch0_map=SPWD,ch1_map=SPWD\0" \
+                "lvds_big=setenv bootargs ${bootargs} di1_primary video=mxcdi1fb:RGB24,UD24 lvds gpu_nummu gpu_memory=80M ldb=split,di=1,ch0_map=SPWD,ch1_map=SPWD\0" \
+		"vga_big=setenv bootargs ${bootargs} di1_primary video=mxcdi1fb:GBR24,1680x1050@60 vga gpu_nommu gpu_memory=80M console=ttymxc0,115200 no_console_suspend=1\0" \
 		"vga=setenv bootargs ${bootargs} di1_primary video=mxcdi1fb:GBR24,1024x768@60 di1_primary vga gpu_memory=256M console=ttymxc0,115200 no_console_suspend=1\0" \
 		"lcd=setenv bootargs ${bootargs} di0_primary calibration\0" \
 		"hdmi_720p=setenv bootargs ${bootargs} di0_primary video=mxcdi0fb:RGB24,1280x720M@60 hdmi gpu_nommu gpu_memory=64M\0"	\
 		"hdmi_1080p=setenv bootargs ${bootargs} di0_primary video=mxcdi0fb:RGB24,1080P60 hdmi gpu_nommu gpu_memory=64M\0"	\
 		"claa_lcd=setenv bootargs ${bootargs} di0_primary video=mxcdi0fb:RGB565,CLAA-WVGA calibration\0" \
-		"set_display=run vga\0"			\
+		"set_display=run vga_big\0"			\
 		"bootargs_android=setenv bootargs ${bootargs} root=/dev/mmcblk0p1 rootwait init=/init rw console=ttymxc0  androidboot.console=ttymxc0 \0"			\
 		"bootcmd=run bootcmd_SD\0"				\
 		"bootcmd_SD=run bootcmd_SD1 bootcmd_SD2\0"				\

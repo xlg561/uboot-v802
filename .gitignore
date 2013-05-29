@@ -22,7 +22,6 @@ u-boot*
 #
 
 /System.map
-/u-boot
 /u-boot.hex
 /u-boot.map
 /u-boot.bin

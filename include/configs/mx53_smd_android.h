@@ -131,6 +131,14 @@
 
 #define CONFIG_CMD_MMC
 #define CONFIG_CMD_ENV
+//#define CONFIG_CMD_NAND
+//#define CONFIG_MXC_NAND
+/* NAND FLASH driver setup */
+//#define CONFIG_SYS_NAND_MAX_CHIPS     8
+//#define CONFIG_SYS_MAX_NAND_DEVICE    1
+//#define CONFIG_SYS_NAND_BASE          0x40000000
+//#define CONFIG_NAND_FW_16BIT    0 /* 1: 16bit 0: 8bit */
+//#define CONFIG_MTD_NAND_VERIFY_WRITE
 
 #define CONFIG_CMD_IIM
 
@@ -162,16 +170,20 @@
 		"vga_big=setenv bootargs ${bootargs} di1_primary video=mxcdi1fb:GBR24,1680x1050@60 vga gpu_nommu gpu_memory=80M console=ttymxc0,115200 no_console_suspend=1\0" \
 		"vga=setenv bootargs ${bootargs} di1_primary video=mxcdi1fb:GBR24,1024x768@60 di1_primary vga gpu_memory=256M console=ttymxc0,115200 no_console_suspend=1\0" \
 		"lcd=setenv bootargs ${bootargs} di0_primary calibration\0" \
+		"lvdsauo156=setenv bootargs ${bootargs} di1_primary video=mxcdi1fb:RGB24,AUO156 ldb=split,di=1,ch0_map=SPWD,ch1_map=SPWD\0" \
 		"hdmi_720p=setenv bootargs ${bootargs} di0_primary video=mxcdi0fb:RGB24,1280x720M@60 hdmi gpu_nommu gpu_memory=64M\0"	\
 		"hdmi_1080p=setenv bootargs ${bootargs} di0_primary video=mxcdi0fb:RGB24,1080P60 hdmi gpu_nommu gpu_memory=64M\0"	\
 		"claa_lcd=setenv bootargs ${bootargs} di0_primary video=mxcdi0fb:RGB565,CLAA-WVGA calibration\0" \
-		"set_display=run vga_big\0"			\
+        "lvds38=setenv bootargs ${bootargs} di1_primary video=mxcdi0fb:RGB24,AUO38 ldb=di0,split di0_primary dmfc=3i,ch0_map=JEIDA,ch1_map=JEIDA\0" \
+        "set_display=run lvdsauo156\0"			\
 		"bootargs_android=setenv bootargs ${bootargs} root=/dev/mmcblk0p1 rootwait init=/init rw console=ttymxc0  androidboot.console=ttymxc0 \0"			\
+		"bootcmd_nand=run bootargs_base set_display bootargs_nand;nand read ${loadaddr} 0x1000000 0x400000;bootm\0" \
 		"bootcmd=run bootcmd_SD\0"				\
 		"bootcmd_SD=run bootcmd_SD1 bootcmd_SD2\0"				\
 		"bootcmd_SD1=run bootargs_base set_display bootargs_android\0"	\
 		"bootcmd_SD2=mmc read 0 ${loadaddr} 0x800 0x2000;"\
 		"mmc read 0 ${rd_loadaddr} 0x3000 0x300;bootm\0" 		\
+		"ethaddr=12:12:12:12:12:12\0" \
 		"bootargs_nfs=setenv bootargs ${bootargs} root=/dev/nfs "\
 			"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0"\
 		"bootcmd_net=run bootargs_base bootargs_nfs; "		\
@@ -302,10 +314,13 @@
 #define CONFIG_SYS_NO_FLASH
 
 /* Monitor at beginning of flash */
+//#if defined(CONFIG_MXC_NAND)
+//#define CONFIG_FSL_ENV_IN_NAND
+//#else
 #define CONFIG_FSL_ENV_IN_MMC
-/* #define CONFIG_FSL_ENV_IN_SATA */
+//#endif
 
-#define CONFIG_ENV_SECT_SIZE    (128 * 1024)
+#define CONFIG_ENV_SECT_SIZE    (128 * 1024)//gxu add 80000
 #define CONFIG_ENV_SIZE         CONFIG_ENV_SECT_SIZE
 
 #if defined(CONFIG_FSL_ENV_IN_NAND)

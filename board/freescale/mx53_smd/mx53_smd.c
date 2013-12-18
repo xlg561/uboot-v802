@@ -649,8 +649,9 @@ int fec_get_mac_addr(unsigned char *mac)
 	int i;
 
 	for (i = 0; i < 6; ++i, ++iim1_mac_base)
-		mac[i] = (u8)readl(iim1_mac_base);
-
+    {
+        mac[i] = (u8)readl(iim1_mac_base);
+    }
 	return 0;
 }
 #endif
@@ -780,7 +781,8 @@ int esdhc_gpio_init(bd_t *bis)
 			mxc_iomux_set_pad(MX53_PIN_SD1_DATA3, 0x1D4);
 			break;
 		case 1:
-			mxc_request_iomux(MX53_PIN_ATA_RESET_B,
+#if 0
+            mxc_request_iomux(MX53_PIN_ATA_RESET_B,
 						IOMUX_CONFIG_ALT2);
 			mxc_request_iomux(MX53_PIN_ATA_IORDY,
 						IOMUX_CONFIG_ALT2);
@@ -811,7 +813,7 @@ int esdhc_gpio_init(bd_t *bis)
 			mxc_iomux_set_pad(MX53_PIN_ATA_DATA1, 0x1D4);
 			mxc_iomux_set_pad(MX53_PIN_ATA_DATA2, 0x1D4);
 			mxc_iomux_set_pad(MX53_PIN_ATA_DATA3, 0x1D4);
-
+#endif
 			break;
 		default:
 			printf("Warning: you configured more ESDHC controller"
@@ -907,6 +909,121 @@ void setup_splash_image(void)
 }
 #endif
 
+#ifdef CONFIG_MXC_NAND
+void setup_nfc(void)
+{
+	u32 i, reg;
+	#define M4IF_GENP_WEIM_MM_MASK          0x00000001
+	#define WEIM_GCR2_MUX16_BYP_GRANT_MASK  0x00001000
+#if 0
+	reg = __raw_readl(M4IF_BASE_ADDR + 0xc);
+	reg &= ~M4IF_GENP_WEIM_MM_MASK;
+	__raw_writel(reg, M4IF_BASE_ADDR + 0xc);
+	for (i = 0x4; i < 0x94; i += 0x18) {
+		reg = __raw_readl(WEIM_BASE_ADDR + i);
+		reg &= ~WEIM_GCR2_MUX16_BYP_GRANT_MASK;
+		__raw_writel(reg, WEIM_BASE_ADDR + i);
+	}
+
+	/* To be compatible with some old NAND flash,
+	 * limit NFC clocks as 34MHZ. The user can modify
+	 * it according to dedicate NAND flash
+	 */
+#endif
+	clk_config(0, 34, NFC_CLK);
+
+	mxc_request_iomux(MX53_PIN_NANDF_CS0,
+			IOMUX_CONFIG_ALT0);
+	mxc_iomux_set_pad(MX53_PIN_NANDF_CS0,
+			PAD_CTL_DRV_HIGH);
+	mxc_request_iomux(MX53_PIN_NANDF_CS1,
+			IOMUX_CONFIG_ALT0);
+	mxc_iomux_set_pad(MX53_PIN_NANDF_CS1,
+			PAD_CTL_DRV_HIGH);
+	mxc_request_iomux(MX53_PIN_NANDF_CS2,
+			IOMUX_CONFIG_ALT0);
+	mxc_iomux_set_pad(MX53_PIN_NANDF_CS2,
+			PAD_CTL_DRV_HIGH);
+	mxc_request_iomux(MX53_PIN_NANDF_CS3,
+			IOMUX_CONFIG_ALT0);
+	mxc_iomux_set_pad(MX53_PIN_NANDF_CS3,
+			PAD_CTL_DRV_HIGH);
+	mxc_request_iomux(MX53_PIN_NANDF_RB0,
+			IOMUX_CONFIG_ALT0);
+	mxc_iomux_set_pad(MX53_PIN_NANDF_RB0,
+			PAD_CTL_PKE_ENABLE | PAD_CTL_PUE_PULL |
+			PAD_CTL_100K_PU);
+	mxc_request_iomux(MX53_PIN_NANDF_CLE,
+			IOMUX_CONFIG_ALT0);
+	mxc_iomux_set_pad(MX53_PIN_NANDF_CLE,
+			PAD_CTL_DRV_HIGH);
+	mxc_request_iomux(MX53_PIN_NANDF_ALE,
+			IOMUX_CONFIG_ALT0);
+	mxc_iomux_set_pad(MX53_PIN_NANDF_ALE,
+			PAD_CTL_DRV_HIGH);
+	mxc_request_iomux(MX53_PIN_NANDF_WP_B,
+			IOMUX_CONFIG_ALT0);
+	mxc_iomux_set_pad(MX53_PIN_NANDF_WP_B,
+			PAD_CTL_PKE_ENABLE | PAD_CTL_PUE_PULL |
+			PAD_CTL_100K_PU);
+	mxc_request_iomux(MX53_PIN_NANDF_RE_B,
+			IOMUX_CONFIG_ALT0);
+	mxc_iomux_set_pad(MX53_PIN_NANDF_RE_B,
+			PAD_CTL_DRV_HIGH);
+	mxc_request_iomux(MX53_PIN_NANDF_WE_B,
+			IOMUX_CONFIG_ALT0);
+	mxc_iomux_set_pad(MX53_PIN_NANDF_WE_B,
+			PAD_CTL_DRV_HIGH);
+	mxc_request_iomux(MX53_PIN_ATA_DATA0,
+			IOMUX_CONFIG_ALT3);
+	mxc_iomux_set_pad(MX53_PIN_ATA_DATA0,
+			PAD_CTL_PKE_ENABLE | PAD_CTL_100K_PU |
+			PAD_CTL_DRV_HIGH);
+
+	mxc_request_iomux(MX53_PIN_ATA_DATA1,
+			IOMUX_CONFIG_ALT3);
+	mxc_iomux_set_pad(MX53_PIN_ATA_DATA1,
+			PAD_CTL_PKE_ENABLE | PAD_CTL_100K_PU |
+			PAD_CTL_DRV_HIGH);
+
+	mxc_request_iomux(MX53_PIN_ATA_DATA2,
+			IOMUX_CONFIG_ALT3);
+	mxc_iomux_set_pad(MX53_PIN_ATA_DATA2,
+			PAD_CTL_PKE_ENABLE | PAD_CTL_100K_PU |
+			PAD_CTL_DRV_HIGH);
+
+	mxc_request_iomux(MX53_PIN_ATA_DATA3,
+			IOMUX_CONFIG_ALT3);
+	mxc_iomux_set_pad(MX53_PIN_ATA_DATA3,
+			PAD_CTL_PKE_ENABLE | PAD_CTL_100K_PU |
+			PAD_CTL_DRV_HIGH);
+
+	mxc_request_iomux(MX53_PIN_ATA_DATA4,
+			IOMUX_CONFIG_ALT3);
+	mxc_iomux_set_pad(MX53_PIN_ATA_DATA4,
+			PAD_CTL_PKE_ENABLE | PAD_CTL_100K_PU |
+			PAD_CTL_DRV_HIGH);
+
+	mxc_request_iomux(MX53_PIN_ATA_DATA5,
+			IOMUX_CONFIG_ALT3);
+	mxc_iomux_set_pad(MX53_PIN_ATA_DATA5,
+			PAD_CTL_PKE_ENABLE | PAD_CTL_100K_PU |
+			PAD_CTL_DRV_HIGH);
+
+	mxc_request_iomux(MX53_PIN_ATA_DATA6,
+			IOMUX_CONFIG_ALT3);
+	mxc_iomux_set_pad(MX53_PIN_ATA_DATA6,
+			PAD_CTL_PKE_ENABLE | PAD_CTL_100K_PU |
+			PAD_CTL_DRV_HIGH);
+
+	mxc_request_iomux(MX53_PIN_ATA_DATA7,
+			IOMUX_CONFIG_ALT3);
+	mxc_iomux_set_pad(MX53_PIN_ATA_DATA7,
+			PAD_CTL_PKE_ENABLE | PAD_CTL_100K_PU |
+			PAD_CTL_DRV_HIGH);
+}
+#endif
+
 int board_init(void)
 {
 	unsigned int val;
@@ -934,6 +1051,10 @@ int board_init(void)
 	gd->bd->bi_boot_params = PHYS_SDRAM_1 + 0x100;
 
 	setup_uart();
+
+#ifdef CONFIG_MXC_NAND
+	setup_nfc();
+#endif
 
 #ifdef CONFIG_MXC_FEC
 	setup_fec();
